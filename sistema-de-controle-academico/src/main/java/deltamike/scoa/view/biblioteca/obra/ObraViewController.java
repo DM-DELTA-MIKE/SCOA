@@ -4,6 +4,7 @@
  */
 package deltamike.scoa.view.biblioteca.obra;
 
+import com.google.gson.Gson;
 import deltamike.scoa.controller.biblioteca.obra.*;
 import deltamike.scoa.dtos.biblioteca.obra.ArtigoDTO;
 import deltamike.scoa.dtos.biblioteca.obra.FilmeDTO;
@@ -19,6 +20,10 @@ import deltamike.scoa.model.biblioteca.obra.ManualModel;
 import deltamike.scoa.model.biblioteca.obra.ObraModel;
 import deltamike.scoa.model.biblioteca.obra.RevistaModel;
 import deltamike.scoa.services.biblioteca.obra.ObraService;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 import java.util.Optional;
 import javax.validation.Valid;
@@ -37,6 +42,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import com.google.gson.JsonObject;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 
 /**
  *
@@ -45,10 +55,10 @@ import org.springframework.web.bind.annotation.RestController;
 @Controller
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RequestMapping("/biblioteca/obra")
-public class ObraController {
+public class ObraViewController {
     final ObraService obraService;
 
-    public ObraController(ObraService obraService) {
+    public ObraViewController(ObraService obraService) {
         this.obraService = obraService;
     }
     
@@ -57,8 +67,42 @@ public class ObraController {
     public String saveArtigo(@ModelAttribute @Valid ArtigoDTO artigoDTO){
         ArtigoModel artigo = new ArtigoModel();
         BeanUtils.copyProperties(artigoDTO, artigo);
-        this.obraService.save(artigo);
-        return  "redirect:/biblioteca";
+    
+        try {
+        
+            URL url = new URL("http://localhost:8080/api/biblioteca/obra/artigo");
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setRequestProperty("Accept", "*/*");
+            connection.setDoOutput(true); //conexão preparada para receber dados (n faço a minima ideia do porque se chama output, se do meu ponto de vista, estou enviando dados para api e portanto estou fazendo INPUT, mas vai entender...)
+
+            JsonObject json = new JsonObject();
+            json.addProperty("titulo", artigo.getTitulo());
+            json.addProperty("anoPublicacao", artigo.getAnoPublicacao());
+            json.addProperty("idioma", artigo.getIdioma());
+            json.addProperty("palavrasChave", artigo.getPalavrasChave());
+            json.addProperty("autor", artigo.getAutor());
+            json.addProperty("editora", artigo.getEditora());
+            
+            OutputStream out = connection.getOutputStream();
+            
+            byte[] input = new Gson().toJson(json).getBytes("utf-8");
+            out.write(input, 0, input.length);//obra enviada para a api
+            
+            InputStream inputStream = connection.getInputStream();
+            int response = connection.getResponseCode();
+            connection.disconnect();
+            if (response == 201){
+                return "redirect:/biblioteca";
+            }
+            
+        } catch (MalformedURLException e) {
+            System.out.println("EXCEÇÃO: " + e.toString());
+        } catch(IOException e){
+            System.out.println("EXCEÇÃO: " + e.toString());
+        }
+       return "redirect:/error";
     }
     
     //Serve a pagina de cadastro de artigos

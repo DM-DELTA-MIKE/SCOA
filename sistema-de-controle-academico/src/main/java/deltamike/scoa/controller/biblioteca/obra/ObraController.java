@@ -43,7 +43,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @CrossOrigin(origins = "*", maxAge = 3600)
-@RequestMapping("/biblioteca/obra")
+@RequestMapping("/api/biblioteca/obra")
 public class ObraController {
     final ObraService obraService;
 
@@ -53,18 +53,11 @@ public class ObraController {
     
     //Salva um artigo no banco de dados e redireciona para a pagina da biblioteca
     @PostMapping("/artigo")
-    public String saveArtigo(@ModelAttribute @Valid ArtigoDTO artigoDTO){
+    public ResponseEntity<Object> saveArtigo(@RequestBody @Valid ArtigoDTO artigoDTO){
         ArtigoModel artigo = new ArtigoModel();
         BeanUtils.copyProperties(artigoDTO, artigo);
-        this.obraService.save(artigo);
-        return  "redirect:/biblioteca";
-    }
-    
-    //Serve a pagina de cadastro de artigos
-    @GetMapping("/artigo")
-    public String cadastroArtigo(Model model){
-        model.addAttribute("artigodto", new ArtigoDTO());
-        return "registrar_artigo";
+        ObraModel retorno = this.obraService.save(artigo);
+        return  ResponseEntity.status(HttpStatus.CREATED).body(retorno);
     }
     
     //Salva um filme no banco de dados e redireciona para a pagina da biblioteca
