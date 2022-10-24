@@ -2,8 +2,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package deltamike.scoa.controller.biblioteca.obra;
+package deltamike.scoa.view.biblioteca.obra;
 
+import deltamike.scoa.controller.biblioteca.obra.*;
 import deltamike.scoa.dtos.biblioteca.obra.ArtigoDTO;
 import deltamike.scoa.dtos.biblioteca.obra.FilmeDTO;
 import deltamike.scoa.dtos.biblioteca.obra.JornalDTO;
@@ -41,7 +42,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author rodri
  */
-@RestController
+@Controller
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RequestMapping("/biblioteca/obra")
 public class ObraController {
