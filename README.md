@@ -8,6 +8,7 @@
 - StarUML
 - draw.io
 - Postman
+- Node.js 18.12.0 LTS
 
 ## Autores
 
