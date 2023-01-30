@@ -17,7 +17,7 @@
 - Guilherme Francisco de Oliveira Almeida
 - Raphael de Oliveira dos Santos
 - Lucas de Mendonça Cardoso
-- [Nome]
+- Allan Coelho Monteiro
 
 ## Imagens
 
